@@ -1,32 +1,38 @@
+from urllib.parse import urlparse
+
 class Tweet:
 
     def __init__(self):
         pass
 
     def __str__(self):
-        id = ':'.join(('id', self.id))
-        permalink = ':'.join(('pemalink', self.permalink))
-        username = ':'.join(('username', self.username))
-        text = ':'.join(('text', self.text))
-        date = ':'.join(('date', self.date.strftime('%m/%d/%Y')))
-        retweets = ':'.join(('retweets', str(self.retweets)))
-        favorites = ':'.join(('favorites', str(self.favorites)))
-        mentions = ':'.join(('mentions', str(self.mentions)))
-        hasthags = ':'.join(('hasthags', self.hashtags))
-        geo = ':'.join(('geo', self.geo))
+        tweet_args = []
 
-        tweet_args = (id,
-                      permalink,
-                      username,
-                      text,
-                      date,
-                      retweets,
-                      favorites,
-                      mentions,
-                      hasthags,
-                      geo)
+        url_comp = urlparse(self.permalink)
+        self.username = url_comp.path.split('/')[1]
+
+        username = ':'.join(('"username"',
+                         ''.join(('"',
+                                  str(self.username),
+                                  '"'))))
+        tweet_args.append(username)
+
+        for key in ['id', 'permalink','text', 'retweets', 'favorites', 'mentions', 'hashtags', 'geo']:
+            tweet_args.append(':'.join(('"' + key + '"',
+                                        ''.join(('"',
+                                                 str(self.__dict__[key]),
+                                                 '"')))))
+
+        date = ':'.join(('"date"',
+                         ''.join(('"',
+                                  self.date.strftime('%d/%m/%Y %H:%M:%S'),
+                                  '"'))))
+        tweet_args.append(date)
+
         str_tweet = ','.join(tweet_args)
+
         return str_tweet
+
 
     def __repr__(self):
         return ''.join(('{', self.__str__(), '}'))

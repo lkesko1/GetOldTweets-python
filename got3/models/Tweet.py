@@ -1,4 +1,3 @@
-import datetime
 from urllib.parse import urlparse
 
 class Tweet:
